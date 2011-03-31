@@ -5,7 +5,7 @@ Donate link: http://www.bismoke.us/donate/
 Tags: wpautop, filter
 Requires at least: 3.0
 Tested up to: 3.0.1
-Stable tag: 1.1
+Stable tag: 1.2
 
 Adds a global setting to turn the wpautop filter on and off. It also allows you to override this default for any post by adding a wpautop custom field.
 
@@ -29,6 +29,9 @@ Add a custom field called `wpautop` to any post. When set to `false`, `no` or `o
 You can set the field's value to `true`, `yes` or `on` if you do want WordPress to use its `wpautop` filter to add `<p>` and `<br>` tags for you. (Of course, this only makes sense if you've globally disabled `wpautop` in the included option screen.)
 
 == Changelog ==
+
+= 1.2 =
+* Improved readme.txt so that usage instructions turn up in the FAQ instead of in Other Notes.
 
 = 1.1 =
 * Clarified option screen. It seemed to be causing confusion.
