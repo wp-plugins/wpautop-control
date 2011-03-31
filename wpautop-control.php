@@ -27,12 +27,15 @@ if ( is_admin() ) {
 
     <form method="post" action="options.php">
       <?php settings_fields('wpautop-control') ?>
+
+      <p>Normally, WordPress filters your posts' content using the wpautop filter. Roughly, what this filter does is that it replaces newlines and empty lines with <tt>&lt;br /&gt;</tt> or <tt>&lt;p&gt;</tt>. The setting below lets you turn this filter on or off. (You can later override it on a post-by-post basis by setting the wpautop custom field to ‘true’ or ‘false’.)</p>
+
       <table class="form-table">
         <tr valign="top">
           <th scope="row">wpautop filter on by default?</th>
           <td>
-            <label><input type="radio" name="wpautop_on_by_default" value="1" <?php if ( get_option('wpautop_on_by_default') == '1' ) echo 'checked="1"' ?>> yes</label>
-            <label><input type="radio" name="wpautop_on_by_default" value="0" <?php if ( get_option('wpautop_on_by_default') == '0' ) echo 'checked="1"' ?>> no</label>
+            <label><input type="radio" name="wpautop_on_by_default" value="1" <?php if ( get_option('wpautop_on_by_default') == '1' ) echo 'checked="1"' ?>> yes <small>(WordPress' default behaviour)</small></label><br />
+            <label><input type="radio" name="wpautop_on_by_default" value="0" <?php if ( get_option('wpautop_on_by_default') == '0' ) echo 'checked="1"' ?>> no <small>(turn of WordPress' auto-formatting, except for selected posts)</small></label>
           </td>
       </table>
 
@@ -62,9 +65,9 @@ else { // ! is_admin()
     $remove_filter = false;
     if ( empty($post_wpautop_value) )
       $remove_filter = ! $default_wpautop_value;
-    elseif ($post_wpautop_value == 'true')
+    elseif ( in_array($post_wpautop_value, array('true', 'on', 'yes')) )
       $remove_filter = false;
-    elseif ($post_wpautop_value == 'false')
+    elseif ( in_array($post_wpautop_value, array('false', 'off', 'no')) )
       $remove_filter = true;
 
     if ( $remove_filter ) {
