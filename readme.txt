@@ -35,7 +35,7 @@ You can set the field's value to `true`, `yes` or `on` if you do want WordPress 
 
 = 1.1 =
 * Clarified option screen. It seemed to be causing confusion.
-• Instead of just true/false, you can now also use yes/no or on/off in the wpautop custom field.
+* Instead of just true/false, you can now also use yes/no or on/off in the wpautop custom field.
 
 = 1.0 =
 * First release
