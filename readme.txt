@@ -18,9 +18,13 @@ This plugin was born out of a very simple need. Back in the day, when the wpauto
 1. Unzip the plugin in the `/wp-content/plugins/` directory
 1. Activate the plugin through the 'Plugins' menu in WordPress
 
-== Usage ==
+== Frequently Asked Questions ==
+
+= How do I turn off automatic formatting for a post? =
 
 Add a custom field called `wpautop` to any post. When set to `false`, `no` or `off`, WordPress will no longer attempt to add `<p>` and `<br>` tags to your posts (so you'll be responsible for adding these yourself).
+
+= How do I turn on automatic formatting for a post? =
 
 You can set the field's value to `true`, `yes` or `on` if you do want WordPress to use its `wpautop` filter to add `<p>` and `<br>` tags for you. (Of course, this only makes sense if you've globally disabled `wpautop` in the included option screen.)
 
