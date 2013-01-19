@@ -4,7 +4,7 @@ Contributors: bigsmoke
 Donate link: http://www.bismoke.us/donate/
 Tags: wpautop, filter
 Requires at least: 3.0
-Tested up to: 3.0.1
+Tested up to: 3.2.1
 Stable tag: 1.2
 
 Adds a global setting to turn the wpautop filter on and off. It also allows you to override this default for any post by adding a wpautop custom field.
