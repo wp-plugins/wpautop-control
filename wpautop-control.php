@@ -5,12 +5,13 @@ Plugin URI: http://blog.bigsmoke.us/tag/wpautop-control/
 Description: This plugin allows you fine control of when and when not to enable the wpautop filter on posts.
 Author: Rowan Rodrik van der Molen, Jesse Jacobsen <jmatjac@gmail.com>.
 Author URI: http://blog.bigsmoke.us
-Version: 1.5
+Version: 1.6
 */
 
 if ( is_admin() ) {
   add_action('admin_menu', 'wpautop_control_menu');
   add_action('admin_init', 'wpautop_control_settings');
+  register_activation_hook(__FILE__, 'wpautop_control_update');
 
   function wpautop_control_menu() {
     add_submenu_page('options-general.php', 'wpautop-control', 'wpautop control', 'manage_options', 'wpautop-control-menu', 'wpautop_control_options');
@@ -51,6 +52,17 @@ if ( is_admin() ) {
   function wpautop_control_settings() {
     register_setting('wpautop-control', 'wpautop_by_default');
   }
+
+  function wpautop_control_update() {
+    wpautop_control_settings();
+
+    // Upgrade from pre-Jesse boolean option
+    $default_on = intval( get_option('wpautop_on_by_default', '1') );
+    if ( ! $default_on ) {
+      update_option('wpautop_by_default', 'off');
+    }
+    delete_option('wpautop_on_by_default');
+  }
 }
 else { // ! is_admin()
   add_filter('the_content', 'wpautop_control_filter', 9);
@@ -61,13 +73,19 @@ else { // ! is_admin()
     // Get the keys and values of the custom fields:
     $post_wpautop_value = get_post_meta($post->ID, 'wpautop', true);
 
-    $default_wpautop_value = get_option('wpautop_by_default', 'default');
+    $filter_type = get_option('wpautop_by_default', 'default');
 
-    $remove_filter = false;
-    if ( empty($post_wpautop_value) || ! in_array($post_wpautop_value, array( "default", "-breaks", "off") ) )
-      $filter_type = $default_wpautop_value;
-    else
-      $filter_type = $post_wpautop_value;
+    if ( !empty($post_wpautop_value) ) {
+      if ( in_array($post_wpautop_value, array('true', 'on', 'yes')) ) {
+        $filter_type = 'default';
+      }
+      elseif ( in_array($post_wpautop_value, array('false', 'off', 'no')) ) {
+        $filter_type = 'off';
+      }
+      elseif ( $post_wpautop_value == '-breaks' ) {
+        $filter_type = '-breaks';
+      }
+    }
 
     if ( $filter_type == "default" ) {
         // Leave WordPress wpautop behavior in place
