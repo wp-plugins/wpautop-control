@@ -5,7 +5,7 @@ Plugin URI: http://blog.bigsmoke.us/tag/wpautop-control/
 Description: This plugin allows you fine control of when and when not to enable the wpautop filter on posts.
 Author: Rowan Rodrik van der Molen, Jesse Jacobsen <jmatjac@gmail.com>.
 Author URI: http://blog.bigsmoke.us
-Version: 1.4
+Version: 1.5
 */
 
 if ( is_admin() ) {
