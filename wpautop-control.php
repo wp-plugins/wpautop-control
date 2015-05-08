@@ -3,9 +3,9 @@
 Plugin Name: wpautop-control
 Plugin URI: http://blog.bigsmoke.us/tag/wpautop-control/
 Description: This plugin allows you fine control of when and when not to enable the wpautop filter on posts.
-Author: Rowan Rodrik van der Molen
-Author URI: http://blog.bigsmoke.us/
-Version: 1.0
+Author: Rowan Rodrik van der Molen, Jesse Jacobsen <jmatjac@gmail.com>.
+Author URI: http://blog.bigsmoke.us
+Version: 1.4
 */
 
 if ( is_admin() ) {
@@ -28,14 +28,15 @@ if ( is_admin() ) {
     <form method="post" action="options.php">
       <?php settings_fields('wpautop-control') ?>
 
-      <p>Normally, WordPress filters your posts' content using the wpautop filter. Roughly, what this filter does is that it replaces newlines and empty lines with <tt>&lt;br /&gt;</tt> or <tt>&lt;p&gt;</tt>. The setting below lets you turn this filter on or off. (You can later override it on a post-by-post basis by setting the wpautop custom field to ‘true’ or ‘false’.)</p>
+      <p>Normally, WordPress filters your posts' content using the wpautop filter. What this filter does is that it replaces single newlines with <tt>&lt;br /&gt;</tt> and empty lines with <tt>&lt;p&gt;</tt>. The setting below lets you turn this filter on or off. (You can later override it on a post-by-post basis by setting the wpautop custom field to ‘default’, ‘-breaks’, or ‘off’.)</p>
 
       <table class="form-table">
         <tr valign="top">
           <th scope="row">wpautop filter on by default?</th>
           <td>
-            <label><input type="radio" name="wpautop_on_by_default" value="1" <?php if ( get_option('wpautop_on_by_default') == '1' ) echo 'checked="1"' ?>> yes <small>(WordPress' default behaviour)</small></label><br />
-            <label><input type="radio" name="wpautop_on_by_default" value="0" <?php if ( get_option('wpautop_on_by_default') == '0' ) echo 'checked="1"' ?>> no <small>(turn of WordPress' auto-formatting, except for selected posts)</small></label>
+            <label><input type="radio" name="wpautop_by_default" value="default" <?php if ( get_option('wpautop_by_default') == 'default' ) echo 'checked="1"' ?>> default <small>(WordPress' default behaviour)</small></label><br />
+            <label><input type="radio" name="wpautop_by_default" value="-breaks" <?php if ( get_option('wpautop_by_default') == '-breaks' ) echo 'checked="1"' ?>> -breaks <small>(turn off WordPress' line breaks)</small></label><br />
+            <label><input type="radio" name="wpautop_by_default" value="off" <?php if ( get_option('wpautop_by_default') == 'off' ) echo 'checked="1"' ?>> off <small>(turn off WordPress' auto-formatting)</small></label>
           </td>
       </table>
 
@@ -48,7 +49,7 @@ if ( is_admin() ) {
   }
 
   function wpautop_control_settings() {
-    register_setting('wpautop-control', 'wpautop_on_by_default', 'intval');
+    register_setting('wpautop-control', 'wpautop_by_default');
   }
 }
 else { // ! is_admin()
@@ -60,17 +61,24 @@ else { // ! is_admin()
     // Get the keys and values of the custom fields:
     $post_wpautop_value = get_post_meta($post->ID, 'wpautop', true);
 
-    $default_wpautop_value = intval( get_option('wpautop_on_by_default', '1') );
+    $default_wpautop_value = get_option('wpautop_by_default', 'default');
 
     $remove_filter = false;
-    if ( empty($post_wpautop_value) )
-      $remove_filter = ! $default_wpautop_value;
-    elseif ( in_array($post_wpautop_value, array('true', 'on', 'yes')) )
-      $remove_filter = false;
-    elseif ( in_array($post_wpautop_value, array('false', 'off', 'no')) )
-      $remove_filter = true;
+    if ( empty($post_wpautop_value) || ! in_array($post_wpautop_value, array( "default", "-breaks", "off") ) )
+      $filter_type = $default_wpautop_value;
+    else
+      $filter_type = $post_wpautop_value;
 
-    if ( $remove_filter ) {
+    if ( $filter_type == "default" ) {
+        // Leave WordPress wpautop behavior in place
+    } elseif ( $filter_type == "-breaks" ) {
+        // Remove the wpautop filter and install our own
+      remove_filter('the_content', 'wpautop');
+      remove_filter('the_excerpt', 'wpautop');
+      add_filter('the_content', function ($pee) { return wpautop($pee, false); } );
+      add_filter('the_excerpt', function ($pee) { return wpautop($pee, false); } );
+    } elseif ( $filter_type == "off" ) {
+        // Remove the wpautop filter completely
       remove_filter('the_content', 'wpautop');
       remove_filter('the_excerpt', 'wpautop');
     }
